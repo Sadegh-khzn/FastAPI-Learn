@@ -2,10 +2,24 @@ from fastapi import FastAPI , status , HTTPException
 from schema import UserRequest , userResponse ,userOutput , UserPathRequest
 from typing import List
 from services.user import User_service
+from contextlib import asynccontextmanager
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app :FastAPI):
+    app.state.counter = 0
+    print("Server started")
+    yield
+    print("Server Shutdown")
+
+
+app = FastAPI(lifespan=lifespan)
 user_service = User_service()
 
+
+@app.get("/")
+def root():
+    app.state.counter += 1
+    return {"hello":"world","counter":app.state.counter}
 
 @app.post("/user" , response_model=userResponse , status_code=status.HTTP_201_CREATED)
 def create_user(user:UserRequest):
