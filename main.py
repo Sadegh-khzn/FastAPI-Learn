@@ -1,11 +1,9 @@
-from fastapi import FastAPI , status , Depends
+from fastapi import FastAPI , status , Depends , Request
 from schema import UserRequest , userResponse ,userOutput , UserPathRequest
 from typing import List
 from services.user import User_service
 from contextlib import asynccontextmanager
 from dependencies import get_user_servies
-
-
 
 
 
@@ -20,7 +18,8 @@ app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/")
-def root():
+def root(request : Request):
+    print(vars(request))
     app.state.counter += 1
     return {"hello":"world","counter":app.state.counter}
 
